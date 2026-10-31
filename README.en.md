@@ -65,6 +65,7 @@ Rules and hooks are embedded in the binary, so they take effect only after `appl
 | `jira get <KEY> [--json]` | Show one Jira issue (read-only, configured projects only). The token is taken from the keychain for the request only |
 | `jira search "<JQL>" [--limit N] [--json]` | JQL search (default 20, max 100), automatically scoped to the configured projects |
 | `secret-scan --staged\|<range>` | Pre-commit secret scan (uses gitleaks when available) |
+| `report [add\|send\|clear]` | Collect cowork errors and annoyances and send them to this repo's Issues (see "Reporting problems") |
 
 CLI messages are in Korean.
 
@@ -96,7 +97,16 @@ No secrets (tokens) go in this file. Git host logins are kept by the official `g
 
 Guard protects both directories. Use `cowork` commands instead of editing them directly.
 
-## This repository
+## Reporting problems
+
+cowork collects problems it hits only locally (`~/.local/state/cowork/reports.jsonl`). Nothing is sent automatically.
+
+- What is collected: failed commands (command name only, argument values are dropped), failed blocking `doctor` checks, and suggestions you add (`cowork report add "<one line>"`). Suspected guard false positives are picked from recent deny reasons when you send.
+- `cowork report` lists them and `cowork report send` sends them. Before sending it shows each issue title and body exactly as they will be posted and asks `y/n/e/q`. `--dry-run` only previews.
+- Masked: home path, user name, host name, email, IP, private domains (`*.local` etc. and the `report.redact_domains` setting). A report that looks like it contains a secret is not sent.
+- The same problem is grouped into one issue; if an open issue already exists, a comment adds the count.
+- Issues are posted with the sender's own `gh` login, so **your GitHub account name is public.**
+
 
 It holds only the install guide and the release files (Releases). The source code is not public. Use Issues for problems and suggestions.
 
