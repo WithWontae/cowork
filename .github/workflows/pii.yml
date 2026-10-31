@@ -1,0 +1,16 @@
+name: pii
+on:
+  push:
+  pull_request:
+jobs:
+  pii:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          # PR이면 GitHub가 만든 임시 병합 커밋이 아니라 올라온 커밋을 검사한다
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - run: scripts/pii-scan.sh
+        env:
+          PII_PATTERNS: ${{ secrets.PII_PATTERNS }}
