@@ -65,6 +65,7 @@ cowork apply
 | `jira get <KEY> [--json]` | Jira 이슈 하나 조회(읽기 전용, 등록된 프로젝트만). 토큰은 키체인에서 꺼내 요청에만 쓴다 |
 | `jira search "<JQL>" [--limit N] [--json]` | JQL 검색(기본 20건, 최대 100). 등록된 프로젝트로 범위를 자동 제한 |
 | `secret-scan --staged\|<범위>` | 커밋 전 비밀값 검사(gitleaks가 있으면 사용) |
+| `report [add\|send\|clear]` | cowork 오류·불편을 모아 이 레포 Issues로 보내기(아래 "문제·제안 보내기") |
 
 ## 설정
 
@@ -94,7 +95,16 @@ work:                  # init이 채운다. 팀 레포·Jira 유무로 방식이
 
 두 디렉터리는 Guard가 보호한다. 직접 고치지 말고 `cowork` 명령을 쓴다.
 
-## 이 레포
+## 문제·제안 보내기
+
+cowork는 쓰는 중에 생긴 문제를 로컬(`~/.local/state/cowork/reports.jsonl`)에만 모아 둔다. 자동으로 보내지 않는다.
+
+- 모이는 것: 실패한 명령(인자 값은 빼고 명령 이름만), `doctor`의 차단 항목 실패, 직접 남긴 제안(`cowork report add "<한 줄>"`). guard 오탐 의심은 보낼 때 최근 차단 사유 목록에서 고른다.
+- `cowork report`로 목록을 보고, `cowork report send`로 보낸다. 보내기 전에 이슈 제목·본문을 그대로 보여 주고 건마다 `y/n/e/q`로 묻는다. `--dry-run`은 미리보기만 한다.
+- 가리는 것: 홈 경로, 사용자명, 호스트명, 이메일, IP, 사설 도메인(`*.local` 등, `report.redact_domains` 설정). 비밀값처럼 보이는 내용이 있으면 그 보고는 보내지 않는다.
+- 같은 문제는 이슈 하나로 모이고, 이미 열린 이슈가 있으면 댓글로 횟수만 더한다.
+- 이슈는 보내는 사람의 `gh` 로그인으로 올라가므로 **GitHub 계정명이 공개된다.**
+
 
 설치 안내와 배포 파일(Releases)만 둔다. 소스 코드는 공개하지 않는다. 문제나 제안은 Issues에 남긴다.
 
