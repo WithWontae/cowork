@@ -56,6 +56,7 @@ cowork apply
 | `uninstall` | manifest에 기록된 항목만 제거 |
 | `machine set\|show` | 머신 역할과 prod 등급 |
 | `config get\|set language <코드>` | 기본 언어(예: `ko`, `en`) |
+| `config get\|set ui_language ko\|en\|auto` | CLI 출력 언어(기본 `auto`) |
 | `guard explain "<명령>"` | 명령 하나의 Guard 판정과 사유 |
 | `auth jira` | Jira API 토큰 등록(터미널 전용, 확인 후 OS 키체인에 저장) |
 | `auth check github\|gitlab\|jira [--online]` | 쓰기 직전 준비 상태 확인. 안 되면 실행할 명령 안내, exit 1 |
@@ -74,7 +75,8 @@ cowork apply
 ```yaml
 schema_version: 1
 hosts: [claude, codex]
-language: ko
+language: ko          # AI 응답 언어
+ui_language: auto     # CLI 출력: ko, en, auto
 playbooks:
   repos: ["~/my-playbooks"]
 guard:
@@ -85,6 +87,8 @@ work:                  # init이 채운다. 팀 레포·Jira 유무로 방식이
   space: {url: "git@github.com:org/cowork-space.git", path: "~/cowork-space"}   # url이 비면 개인 공간(로컬)
   jira: {site: "https://회사.atlassian.net", project_keys: ["ABC"]}            # 선택
 ```
+
+CLI 출력은 한국어 또는 영어다. `ui_language: auto`이면 `COWORK_LANG` → `LC_ALL`·`LC_MESSAGES`·`LANG` → (macOS에서 앞의 값이 영어이거나 없으면) 시스템 언어(`AppleLanguages`) → 영어 순으로 정한다. 한국어 코드면 한국어, 그 외는 영어다. AI 세션에 주입되는 규칙, Guard 사유, 공개 보고 이슈는 한국어 그대로다.
 
 비밀값(토큰)은 이 파일에 두지 않는다. Git 호스트 로그인은 `gh`/`glab`의 공식 로그인이 관리하고, Jira 토큰은 처음 쓸 때 터미널에서 `cowork auth jira`로 등록한다. 토큰은 Jira API로 확인한 뒤 macOS Keychain(Linux는 Secret Service)에만 저장하고, 설정에는 계정 이메일과 `auth_ref`만 남는다.
 

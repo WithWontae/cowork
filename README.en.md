@@ -32,7 +32,7 @@ cowork config set language en                  # (optional) default language
 cowork install --yes
 ```
 
-After installing, any remaining work is printed as a `다음 단계` (next steps) checklist. With Codex, start a new Codex session and approve the two cowork hooks on the `Hooks need review` screen (or with `/hooks` inside a session). You are done when `cowork doctor` passes everything.
+After installing, any remaining work is printed as a `Next steps` checklist. With Codex, start a new Codex session and approve the two cowork hooks on the `Hooks need review` screen (or with `/hooks` inside a session). You are done when `cowork doctor` passes everything.
 
 To migrate from a legacy `~/cowork` install, use `cowork install --takeover`. See [docs/installation.md](docs/installation.md) (Korean).
 
@@ -56,6 +56,7 @@ Rules and hooks are embedded in the binary, so they take effect only after `appl
 | `uninstall` | Removes only what the manifest recorded |
 | `machine set\|show` | Machine role and prod level |
 | `config get\|set language <code>` | Default language (e.g. `ko`, `en`) |
+| `config get\|set ui_language ko\|en\|auto` | CLI output language (default `auto`) |
 | `guard explain "<command>"` | Guard verdict and reason for one command |
 | `auth jira` | Register a Jira API token (terminal only; verified, then kept in the OS keychain) |
 | `auth check github\|gitlab\|jira [--online]` | Readiness check right before use; prints the command to run and exits 1 if not ready |
@@ -76,7 +77,8 @@ CLI messages are in Korean.
 ```yaml
 schema_version: 1
 hosts: [claude, codex]
-language: en
+language: en          # AI response language
+ui_language: auto     # CLI output: ko, en, auto
 playbooks:
   repos: ["~/my-playbooks"]
 guard:
@@ -87,6 +89,8 @@ work:                  # filled by init; the mode follows from what is set
   space: {url: "git@github.com:org/cowork-space.git", path: "~/cowork-space"}   # empty url = personal (local) space
   jira: {site: "https://company.atlassian.net", project_keys: ["ABC"]}          # optional
 ```
+
+CLI output is Korean or English. `ui_language: auto` picks it in this order: `COWORK_LANG` → `LC_ALL`/`LC_MESSAGES`/`LANG` → on macOS, when those are English or empty, the system language (`AppleLanguages`) → English. Korean codes give Korean, everything else English. Rules injected into AI sessions, Guard reasons and public report issues stay Korean.
 
 No secrets (tokens) go in this file. Git host logins are kept by the official `gh`/`glab` login, and the Jira token is registered with `cowork auth jira` in a terminal when Jira is first used. The token is verified against the Jira API and stored only in the macOS Keychain (Secret Service on Linux); the config keeps just the account email and an `auth_ref`.
 
